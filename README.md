@@ -231,18 +231,25 @@ void loop() {
 </div>
 </details>
 
-### 4.2. GPS 값을 전송 받아 지도에 위치 표시 
+### 4.2. GPS 값을 전송 받아 지도에 위치 표시
+![code1](https://user-images.githubusercontent.com/90882199/160230188-54f325ee-1829-49ca-a1f0-ce681afd331c.jpg) 
 ![image](https://user-images.githubusercontent.com/90882199/160229587-17521393-4827-4724-bf27-0195655af922.png)
 - **Kakao Maps API 활용한 위치 표시** :pushpin:[코드 확인](https://github.com/HeonchanKim/smhrd_coreProject/blob/master/src/main/webapp/kakaoMap_gps.jsp#L21)
   - GPS 모듈을 통해 운전자의 경도, 위도 값을 알아냅니다.
   - 값을 서버로 전송시켜 API를 활용해 지도에 위치를 표시해줍니다.
 
 ### 4.3. 운전자 측정 데이터 그래프 표시 
+![code2](https://user-images.githubusercontent.com/90882199/160231779-f2169834-cac9-4710-9427-0762dc0d0ce5.jpg)
+- **1번** 데이터 측정 시간 날을 기준으로 DB에 값이 저장되어 있지 않으면 값을 저장하고 값이 저장되어있다면 값을 변경합니다.
+- **2번** 건강 데이터가 저장된 객체를 생성하고 변수에 저장합니다.
+- **3번** DB에서 저장된 값을 기준으로 그래프 보여주는 코드 일부 입니다.
+
+</br>
+
 ![image](https://user-images.githubusercontent.com/90882199/160228814-98c08252-0ee7-4009-b2b8-5611da092a39.png)
-- **chart JS 사용해 그래프 구현** :pushpin:[코드 확인](https://github.com/HeonchanKim/smhrd_coreProject/blob/master/src/main/webapp/278board/HealthData.jsp#L151)
+**chart JS 사용해 그래프 구현** :pushpin:[코드 확인](https://github.com/HeonchanKim/smhrd_coreProject/blob/master/src/main/webapp/278board/HealthData.jsp#L151)
   - 건강 데이터를 측정하고 데이터를 서버로 전송받아 DB에 저장합니다.
-  - Chart.js Open source를 
-  - 활용해 사용자에게 그래프로 저장된 데이터를 보여줍니다.
+  - Chart.js Open source를 활용해 사용자에게 그래프로 저장된 데이터를 보여줍니다.
 
 </div>
 </details>
