@@ -232,7 +232,7 @@ void loop() {
 </details>
 
 ### 4.2. GPS 값을 전송 받아 지도에 위치 표시 
-![image](https://user-images.githubusercontent.com/90882199/160223116-2f47eb4e-8d10-482f-879e-1939d7153565.png)
+![image](https://user-images.githubusercontent.com/90882199/160229587-17521393-4827-4724-bf27-0195655af922.png)
 - **Kakao Maps API 활용한 위치 표시** :pushpin:[코드 확인](https://github.com/HeonchanKim/smhrd_coreProject/blob/master/src/main/webapp/kakaoMap_gps.jsp#L21)
   - GPS 모듈을 통해 운전자의 경도, 위도 값을 알아냅니다.
   - 값을 서버로 전송시켜 API를 활용해 지도에 위치를 표시해줍니다.
