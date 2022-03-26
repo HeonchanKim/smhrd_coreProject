@@ -22,7 +22,7 @@
 
 </br>
 
-## 3. ERD 설계
+## 3. ERD
 ![](https://user-images.githubusercontent.com/90882199/159430575-1eede29c-4d17-462f-a311-f52c36ad54e8.png)
 
 
@@ -51,7 +51,7 @@
 핸들 뒤편 좌측과 우측 부분에서 산소포화도 체온을 측정 할 수 있습니다. GPS 모듈은 핸들 내부에 부착되어있습니다. 이산화탄소 센서와, MP3 모듈을 분리한 이유는 실제 차량의 스피커와 연동된 모습을 연출하기 위해서 분리시켜놓았습니다. 실제 차량으로 제품을 만든다면 MP3 모듈을 차량의 스피커와 블루투스 연결을 할 생각입니다.
 
 <details>
-<summary><b>아두이노 센서 측정 코드</b></summary>
+<summary><b>아두이노 코드</b></summary>
 <div markdown="1">
 
 ~~~c++
@@ -227,11 +227,22 @@ void loop() {
     lastTime = millis();
   }
 }
-~~~  
+~~~                                                                      
 </div>
 </details>
 
-### 4.2. 
+### 4.2. GPS 값을 전송 받아 지도에 위치 표시 
+![image](https://user-images.githubusercontent.com/90882199/160223116-2f47eb4e-8d10-482f-879e-1939d7153565.png)
+- **Kakao Maps API 활용한 위치 표시** :pushpin:[코드 확인](https://github.com/HeonchanKim/smhrd_coreProject/blob/master/src/main/webapp/kakaoMap_gps.jsp#L21)
+  - GPS 모듈을 통해 운전자의 경도, 위도 값을 알아냅니다.
+  - 값을 서버로 전송시켜 API를 활용해 지도에 위치를 표시해줍니다.
+
+### 4.3. 운전자 측정 데이터 그래프 표시 
+![image](https://user-images.githubusercontent.com/90882199/160228814-98c08252-0ee7-4009-b2b8-5611da092a39.png)
+- **chart JS 사용해 그래프 구현** :pushpin:[코드 확인](https://github.com/HeonchanKim/smhrd_coreProject/blob/master/src/main/webapp/278board/HealthData.jsp#L151)
+  - 건강 데이터를 측정하고 데이터를 서버로 전송받아 DB에 저장합니다.
+  - Chart.js Open source를 
+  - 활용해 사용자에게 그래프로 저장된 데이터를 보여줍니다.
 
 </div>
 </details>
