@@ -22,7 +22,7 @@
 
 </br>
 
-## 3. ERD
+## 3. ERD 설계
 ![](https://user-images.githubusercontent.com/90882199/159430575-1eede29c-4d17-462f-a311-f52c36ad54e8.png)
 
 
@@ -227,7 +227,7 @@ void loop() {
     lastTime = millis();
   }
 }
-~~~                                                                      
+~~~  
 </div>
 </details>
 
@@ -250,11 +250,162 @@ void loop() {
 **chart JS 사용해 그래프 구현** :pushpin:[코드 확인](https://github.com/HeonchanKim/smhrd_coreProject/blob/master/src/main/webapp/278board/HealthData.jsp#L151)
   - 건강 데이터를 측정하고 데이터를 서버로 전송받아 DB에 저장합니다.
   - Chart.js Open source를 활용해 사용자에게 그래프로 저장된 데이터를 보여줍니다.
-
 </div>
 </details>
 
 </br>
 
 ## 5. 핵심 트러블 슈팅
-### 5.1. 
+### 5.1. GPS 모듈 신호 측정 및 값 전송 문제
+- GPS 모듈이 실내에서 쉽게 측정이 되지않아 방법을 찾던 중 창문 근처나 건물 옥상에서 테스트를 진행하게 되었습니다.
+- 먼저 위도,경도값은 **35.xxxxxx, 126.xxxxxx**과 같은 **소수점 6자리 형식**으로 값을 측정했습니다. 하지만 서버로 전송하게 될 때 소수점 2자리까지만 전송이 되어 위치의 오차가 심했습니다.
+
+<details>
+<summary><b>기존 코드</b></summary>
+<div markdown="1">
+
+~~~c++
+#include <SoftwareSerial.h>
+
+#include <TinyGPS.h>
+
+TinyGPS gps;
+SoftwareSerial ss(18, 19); // 18tx 19rx
+
+void setup()
+{
+  Serial.begin(9600);
+  ss.begin(9600);
+}
+
+void loop()
+{
+  bool newData = false;
+  unsigned long chars;
+  unsigned short sentences, failed;
+
+  for (unsigned long start = millis(); millis() - start < 1000;)
+  {
+    while (ss.available())
+    {
+      char c = ss.read();
+      if (gps.encode(c))
+        newData = true;
+    }
+  }
+
+  if (newData)
+  {
+    float flat, flon;
+    unsigned long age;
+    gps.f_get_position(&flat, &flon, &age);
+    Serial.print("LAT=");
+    Serial.print(flat == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flat, 6);
+    Serial.print(" LON=");
+    Serial.println(flon == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flon, 6);
+  }
+  
+}
+~~~
+
+</div>
+</details>
+
+- 해결 방법을 찾던 중 Arduino Sketch에서 위도, 경도 변수에 **1000000를 곱해서** 서버로 전송한 뒤 받은 값을 **1000000로 나눠주는 방식**으로 해결했습니다.
+
+ 
+- 아래 **개선된 코드**와 같이 x(위도), y(경도)에 값을 1000000 곱해주고 result_lat, result_lon를 서버로 전송시킵니다.
+
+<details>
+<summary><b>개선된 코드 일부</b></summary>
+<div markdown="1">
+
+~~~c++
+ if (newData)
+  {
+    gps.f_get_position(&flat, &flon, &age);
+    Serial.print("LAT=");
+    Serial.print(flat == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flat, 6);
+    x = (flat == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flat);
+    result_lat = x * 1000000;
+    Serial.print(" ");
+    Serial.print("LON=");
+    Serial.println(flon == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flon, 6);
+    y = (flon == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flon);
+    result_lon = y * 1000000;
+  }
+~~~
+</div>
+<details>
+<summary><b>서버로 전송한 JSP 코드 일부</b></summary>
+<div markdown="1">
+
+~~~java
+ if (newData)
+  //위도와 경도 값 받아오기
+		String lat = request.getParameter("LAT");
+		String lon = request.getParameter("LON");
+		double r_lat = 0;
+		double r_lon = 0;
+		
+		//실수형 소수점 형식 변환 클래스
+		DecimalFormat df  = new DecimalFormat("0.0000");
+		
+		GpsDAO dao = new GpsDAO();
+		GpsVO vo = dao.selectVal();
+		
+		if(!(lat == null && lon == null)){
+			
+			//문자열 경도, 위도 실수형으로 변환
+			r_lat = Integer.parseInt(lat) / 1000000.0;
+			r_lon = Integer.parseInt(lon) / 1000000.0;
+			
+			//r_lat, r_lon 타입 변환
+			double x = Double.parseDouble(df.format(r_lat));
+			double y = Double.parseDouble(df.format(r_lon));
+			
+			//db에 들어간 마지막 위도경도 값 가져오기
+			double getLat = Double.parseDouble(df.format(vo.getLat()));
+			double getLon = Double.parseDouble(df.format(vo.getLon()));
+			
+			//현재가져온 위도경도값과 db마지막 위도경도값이 같지않을 때
+			if(!(x==getLat && y==getLon)){
+				dao.insertVal(r_lat, r_lon);
+				System.out.println("dao.insertVal() 실행완료!");			
+			}		
+		}
+~~~
+
+</div>
+</details>
+</details>
+
+</br>
+
+## 6. 그 외 트러블 슈팅
+
+<details>
+<summary>GPS 모듈에서 위도, 경도 값을 jsp에서 받아서 값 사용시 NULL</summary>
+<div markdown="1">
+
+- 위도, 경도 값을 받아 변수에 저장 후 이클립스 콘솔에 출력시 값 정상적으로 출력
+- jsp 파일 하단에서 script태그를 열어 표현식으로 위도,경도 값 사용시 null 출력
+- 여러 방법을 사용하던 중 DB에 값을 저장 후 저장된 값을 사용하는 방식으로 해결
+</div>
+</details>    
+<details>
+<summary>웹페이지 접속 시 한글 깨짐 문제</summary>
+<div markdown="1">
+
+- 학원에서 주로 euc-kr 인코딩을 사용하면서 배웠다. 아마 utf-8 형식의 파일과, euc-kr의 파일이 동시에 존재하면서 깨지기 시작했었던 것 같다.
+- Servers 프로젝트의 Server.xml에서 URI 인코딩을 euc-kr에서 utf-8로 변경하니 문제가 해결되었다.
+- 
+</div>
+</details>    
+
+
+    
+</br>
+
+## 6. 회고 / 느낀점
+>프로젝트 개발 회고 글: https://heonchan.tistory.com/entry/%EC%8A%A4%EB%A7%88%ED%8A%B8%EC%9D%B8%EC%9E%AC%EA%B0%9C%EB%B0%9C%EC%9B%90-%EA%B5%AD%EB%B9%84%EC%A7%80%EC%9B%90%EB%AC%B4%EB%A3%8C%EA%B5%90%EC%9C%A1-%ED%95%B5%EC%8B%AC%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EB%A5%BC-%EB%A7%88%EB%AC%B4%EB%A6%AC%ED%95%98%EB%A9%B0?category=989291
