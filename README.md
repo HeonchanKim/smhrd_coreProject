@@ -407,5 +407,5 @@ void loop()
     
 </br>
 
-## 6. 회고 / 느낀점
+## 7. 회고 / 느낀점
 >프로젝트 개발 회고 글: https://heonchan.tistory.com/entry/%EC%8A%A4%EB%A7%88%ED%8A%B8%EC%9D%B8%EC%9E%AC%EA%B0%9C%EB%B0%9C%EC%9B%90-%EA%B5%AD%EB%B9%84%EC%A7%80%EC%9B%90%EB%AC%B4%EB%A3%8C%EA%B5%90%EC%9C%A1-%ED%95%B5%EC%8B%AC%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EB%A5%BC-%EB%A7%88%EB%AC%B4%EB%A6%AC%ED%95%98%EB%A9%B0?category=989291
