@@ -397,8 +397,8 @@ void loop()
 <summary>웹페이지 접속 시 한글 깨짐 문제</summary>
 <div markdown="1">
 
-- 학원에서 주로 euc-kr 인코딩을 사용하면서 배웠다. 아마 utf-8 형식의 파일과, euc-kr의 파일이 동시에 존재하면서 깨지기 시작했었던 것 같다.
-- Servers 프로젝트의 Server.xml에서 URI 인코딩을 euc-kr에서 utf-8로 변경하니 문제가 해결되었다.
+- 학원에서 주로 euc-kr 인코딩을 사용하면서 배웠고 아마 utf-8 형식의 파일과, euc-kr의 파일이 동시에 존재하면서 깨지기 시작했었던 것 같음
+- Servers 프로젝트의 Server.xml에서 URI 인코딩을 euc-kr에서 utf-8로 변경하니 문제가 해결
 - 
 </div>
 </details>    
